@@ -10,22 +10,35 @@ public class PlayerController : MonoBehaviour
     public LayerMask groundLayer;
 
     private Rigidbody2D rd;
+    private Animator pAni;
     private bool isGrounded;
     private float moveInput;
+
+    private bool isGiant = false;
 
     private void Awake()
     {
         rd = GetComponent<Rigidbody2D>();
     }
 
-    private void Update()
+    void Update()
     {
         rd.linearVelocity = new Vector2(moveInput * moveSpeed, rd.linearVelocity.y);
 
-        if (moveInput < 0)
-            transform.localScale = new Vector3(-1, 1, 1);
-        else if (moveInput > 0)
-            transform.localScale = new Vector3(1, 1, 1);
+        if (isGiant)
+        {
+            if (moveInput < 0)
+                transform.localScale = new Vector3(-2, 2, 2);
+            else if (moveInput > 0)
+                transform.localScale = new Vector3(2, 2, 2);
+        }
+        else
+        {
+            if (moveInput < 0)
+                    transform.localScale = new Vector3(-1, 1, 1);
+                else if (moveInput > 0)
+                    transform.localScale = new Vector3(1, 1, 1);
+        }
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
     }
     public void OnMove(InputValue value)
@@ -44,10 +57,7 @@ public class PlayerController : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.name == "Death")
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-
             if (collision.CompareTag("Respawn"))
             {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
@@ -61,7 +71,29 @@ public class PlayerController : MonoBehaviour
             {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
+            if (collision.name == "Death")
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            }
+            if (collision.CompareTag("Enemy"))
+            {
+                if (isGiant)
+                    Destroy(collision.gameObject);
+                else
+                    SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            }
+
+            if (collision.CompareTag("Item"))
+            {
+                isGiant = true;
+                Invoke(nameof(ResetGiant),1f);
+                Destroy(collision.gameObject);
+            }
+        }
+        void ResetGiant()
+        {
+            isGiant = false;
         }
     }
-}// Start is called once before the first execution of Update after the MonoBehaviour is created
+}
 

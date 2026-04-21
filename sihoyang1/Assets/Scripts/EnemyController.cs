@@ -18,7 +18,7 @@ public class EnemyController : MonoBehaviour
         if (isMovingRight)
             rb.linearVelocity = new Vector2(moveSpeed, rb.linearVelocity.y);
         else
-            rb.linearVelocity = new Vector2(moveSpeed, rb.linearVelocity.y);
+            rb.linearVelocity = new Vector2(-moveSpeed, rb.linearVelocity.y);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
