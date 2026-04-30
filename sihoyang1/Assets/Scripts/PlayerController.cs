@@ -14,11 +14,14 @@ public class PlayerController : MonoBehaviour
     private bool isGrounded;
     private float moveInput;
 
+    float score;
     private bool isGiant = false;
 
     private void Awake()
     {
         rd = GetComponent<Rigidbody2D>();
+        pAni = GetComponent<Animator>();
+        score = 0f;
     }
 
     void Update()
@@ -65,7 +68,7 @@ public class PlayerController : MonoBehaviour
 
             if (collision.CompareTag("Finish"))
             {
-                collision.GetComponent<LevelObject>().MoveToNextLevel();
+                HighScore.TrySet(SceneManager.GetActiveScene().buildIndex, (int)score);
             }
             if (collision.CompareTag("Enemy"))
             {
@@ -85,6 +88,7 @@ public class PlayerController : MonoBehaviour
 
             if (collision.CompareTag("Item"))
             {
+                score += 0f;
                 isGiant = true;
                 Invoke(nameof(ResetGiant),1f);
                 Destroy(collision.gameObject);
